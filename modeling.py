@@ -11,6 +11,11 @@ from utils import ReadFile
 
 logger = logging.getLogger(__name__)
 
+MODEL_CLASSES = {
+    "bert": (BertConfig(), BertForSequenceClassification, BertTokenizer),
+    "xlnet": (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer)}
+
+
 def set_seed(args):
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -38,6 +43,11 @@ def main():
     parser.add_argument("--save_steps", default=500, type=int)
     parser.add_argument("--eval_all_checkpoints",action="store_true")
     parser.add_argument("--seed", default=42, type=int)
+    parser.add_argument("--model_type",default="bert",type=str)
+    parser.add_argument("--model_name_or_path", default="BertConfig", type=str)
+    #optional
+    parser.add_argument("--config_name", default="", type=str)
+    
     args = parser.parse_args()
 
     #Setup CUDA, GPU & distributed training
@@ -56,8 +66,19 @@ def main():
 
     #Prepare cnn/dailymail task
     dataset = ReadFile(args.data_dir)
+    num_labels = len(dataset)
     
-    #Load 
+    #Load pretrain model and tokenizer
+    configuration = BertConfig()
+    model = BertModel(configuration)
+    configuration = model.config
+    pretrained_weights = 'bert-base-uncased'
+    tokenizer = BertTokenizer.from_pretrained(pretrained_weights)
+    model = BertModel.from_pretrained(pretrained_weights, output_hidden_states=True, output_attentions=True)
+     
+    model.to(args.device)
+    logger.info("Training/evaluation parameters %s", args)
+    
 
 if __name__ == "__main__":
     main()
