@@ -83,12 +83,11 @@ def convert_examples_to_features(
             assert len(input_ids) == max_length, "Error with input length {} vs {}".format(len(input_ids), max_length)
             assert len(attention_mask) == max_length, "Error with input length {} vs {}".format(len(attention_mask), max_length)
             assert len(token_type_ids) == max_length, "Error with input length {} vs {}".format(len(token_type_ids), max_length)
-            print(attention_mask)
+
             features.append(
               InputFeatures(
                 input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids
            ))
-    #print(features)
     return features
 
 if __name__ == "__main__":
